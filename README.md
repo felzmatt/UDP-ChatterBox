@@ -8,4 +8,4 @@ Authentication is mandatory. This means that the server holds a file structured 
 | -------- | -------- |
 | user1    | pwd1     |
 | ...      | ...      |
-| <userN>  | <pwdN>   |
+|  userN   |  pwdN    |
