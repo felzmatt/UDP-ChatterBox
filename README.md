@@ -6,6 +6,6 @@ The communication is based on UDP, this means that not exists a client-server de
 Authentication is mandatory. This means that the server holds a file structured as follow:
 | Username | Password |
 | -------- | -------- |
-| <user1>  | <pwd1>   |
+| user1    | pwd1     |
 | ...      | ...      |
 | <userN>  | <pwdN>   |
