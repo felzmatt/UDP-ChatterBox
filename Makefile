@@ -1,14 +1,14 @@
 CC=gcc
-CCOPTS=--std=gnu99 -Wall -D_LIST_DEBUG_ 
+CCOPTS=--std=gnu99 -Wall  -g
 AR=ar
 
-OBJS=linked_list.o\
+OBJS=list.o\
 
-HEADERS=linked_list.h
+HEADERS=list.h
 
-LIBS=liblinkedlist.a
+LIBS=liblist.a
 
-BINS=linked_list_test\
+BINS=list_test\
 
 #disastros_test
 
@@ -20,15 +20,15 @@ all:	$(LIBS) $(BINS)
 %.o:	%.c $(HEADERS)
 	$(CC) $(CCOPTS) -c -o $@  $<
 
-liblinkedlist.a: $(OBJS) 
+liblist.a: $(OBJS) 
 	$(AR) -rcs $@ $^
 	$(RM) $(OBJS)
 
 
-linked_list_test:	linked_list_test.c $(LIBS)
+list_test:	list_test.c $(LIBS)
 	$(CC) $(CCOPTS) -o $@ $^
 
-server: main_server.c $(LIBS)
+server: main_server.c server.c $(LIBS)
 	$(CC) $(CCOPTS) -o $@ $^
 
 client: main_client.c $(LIBS)
