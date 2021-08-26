@@ -8,23 +8,19 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "server.h"
+
 #define PORT	 8080
 #define MAXLINE 1024
 
-typedef enum type {
-    NEWUSER,
-    LOGIN,
-    MESSAGE,
-    WHOSONLINE,
-    DISCONNECT
-} Type;
+
 
 // Driver code
+// Future implementation require ip address in input
 int main() {
-    printf("%lu\n", sizeof(Type));
+    
 	int sockfd;
-	char buffer[MAXLINE];
-	char *hello = "Hello from client";
+	
 	struct sockaddr_in	 servaddr;
 
 	// Creating socket file descriptor
@@ -41,8 +37,19 @@ int main() {
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 	
 	int n, len;
+
+	Packet pack = {0};
+	pack.type = NEWUSER;
+	strncpy(pack.sender, "matteo", 6);
+	// strncpy(pack.recipient, "gesù", 5);
+	strncpy(pack.data, "topolin0",8);
+
+	char buffer[MAXLINE] = {0};
+
+
+
 	
-	sendto(sockfd, (const char *)hello, strlen(hello),
+	sendto(sockfd, &pack, sizeof(Packet),
 		MSG_CONFIRM, (const struct sockaddr *) &servaddr,
 			sizeof(servaddr));
 	printf("Hello message sent.\n");
