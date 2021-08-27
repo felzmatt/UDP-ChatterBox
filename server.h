@@ -16,8 +16,13 @@
 
 // errori
 
+// HANDLE NEWUSER
 #define EXISTS_ALREADY "UNAVAILABLE USERNAME, CHOOSE ANOTHER ONE\0"
 #define CREATED_USER "SUCCESSFULLY CREATED USER\0"
+// HANDLE LOGIN
+#define NOT_EXISTS_USER "THIS USERNAME IS NOT IN DATABASE, REGISTER OR TRY WITH ANOTHER ONE\0"
+#define LOGGED_USER "SUCCESSFULLY LOGGED IN\0"
+#define WRONG_PASSWORD "WRONG PASSWORD\0"
 
 #define handle_error(msg) do { fprintf(stderr,"%s\n",msg); exit(-1); }while(1);
 
@@ -65,5 +70,6 @@ void print_packet( Packet * pack);
 
 
 
-int handle_new_user( int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t  sock_len, list_node_ops * ops);
+void handle_new_user( int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t  sock_len, list_node_ops * ops);
+void handle_login(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t sock_len, list_node_ops * ops);
 

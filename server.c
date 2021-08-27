@@ -96,7 +96,7 @@ void print_packet( Packet * pack)
     printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
 }
 
-int handle_new_user(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t  sock_len, list_node_ops * ops)
+void handle_new_user(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t  sock_len, list_node_ops * ops)
 {  
     /**
      * Handles the request of type newuser
@@ -118,6 +118,7 @@ int handle_new_user(int socket, list_t * users, Packet * packet, struct sockaddr
      * FINISH, we need pointer to list of users, pointer to packet received, and client address to send result
      * 
      */
+    printf("Handling NEWUSER\n");
     char username[UNAME_MAX_LEN] = {0};
     char password[PWD_MAX_LEN] = {0};
     sprintf(username, "%s", packet -> sender);
@@ -154,6 +155,68 @@ int handle_new_user(int socket, list_t * users, Packet * packet, struct sockaddr
             written_bytes = sendto(socket, CREATED_USER, confirm_len, MSG_CONFIRM, client_addr, sock_len);
         } while ( written_bytes != confirm_len);
     }
-    return 0;
+    
 
+}
+
+void handle_login(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t sock_len, list_node_ops * ops)
+{
+    /**
+     * Handles requests of LOGIN
+     * REMEMBER THAT CLIENT IS BLOCKED ON THIS REQ UNTIL A RESPONSE IS RECEIVED
+     * The packet is composed as follow
+     * type = LOGIN
+     * sender = <username>
+     * recipient = <all - zeros>
+     * data = <password>
+     * The parsing of message is same of others ( I should have write a function !)
+     */
+    printf("Handling LOGIN\n");
+    char username[UNAME_MAX_LEN] = {0};
+    char password[PWD_MAX_LEN] = {0};
+    sprintf(username, "%s", packet -> sender);
+    sprintf(password, "%s", packet -> data);
+    int username_len = strlen(username);
+    int password_len = strlen(password);
+    
+    User * ret = find_user_by_username( users, username);
+    
+    int written_bytes = 0;
+    
+    int error_len = strlen(NOT_EXISTS_USER);
+    int wrongpwd_len = strlen(WRONG_PASSWORD);
+    int logged_len = strlen(LOGGED_USER);
+
+    if (  ret == NULL ) 
+    {
+        // users is not registered
+        do {
+            written_bytes = 0;
+            written_bytes = sendto(socket, NOT_EXISTS_USER, error_len, MSG_CONFIRM, client_addr, sock_len);
+        } while ( written_bytes != error_len);
+
+    } else {
+        // user has been found in list parsed from db
+        // now it is mandatory to check if password is correct
+        if ( strncmp( ret -> password, password, password_len) == 0 )
+        {
+            // user has demonstrated to be who claims to be, put him/she online and change flag in list
+            do {
+                written_bytes = 0;
+                written_bytes = sendto(socket, LOGGED_USER, logged_len, MSG_CONFIRM, client_addr, sock_len);
+            } while ( written_bytes != logged_len);
+
+            ret -> online = TRUE;
+
+        } else {
+
+            // password is wrong, sorry
+            do {
+                written_bytes = 0;
+                written_bytes = sendto(socket, WRONG_PASSWORD, wrongpwd_len, MSG_CONFIRM, client_addr, sock_len);
+            } while ( written_bytes != wrongpwd_len);
+
+        }
+
+    }
 }

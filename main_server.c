@@ -98,35 +98,25 @@ int main() {
 		// now i have the packet filled with the data sent from the client, is time to switch in base of type of request
 		// ognuna di queste procedure  fa qualcosa, ma tutte si accumunano per spedire un dato di ritorno al client
 		Type req = pack.type;
+		/*
 		if ( req == NEWUSER) {
 			handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
 			print_list(&users);
 		}
-		/*
+		*/
+		
 		switch ( req )
 		{
 			case NEWUSER:
-				ret = handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
-				if ( ret == -1 )
-					handle_error("Error happened during the procedure to handle NEWUSER");
+				handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
+				
 			case LOGIN:
-				ret = handle_login();
-				if (ret == -1)
-					handle_error("Error in procedure to handle LOGIN");
-			case MESSAGE:
-				ret = handle_message();
-				if ( ret == -1)
-					handle_error("Error during procedure to handle MESSAGE");
-			case WHOSONLINE:
-				ret = handle_whosonline();
-				if ( ret == -1 )
-					handle_error("Error during procedure to handle WHOSONLINE");
-			case DISCONNECT:
-				ret = handle_whosonline();
-				if ( ret == -1 )
-					handle_error("Error during procedure to handle DISCONNECT")
+				handle_login( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
+				
+			default:
+				printf("ma che vuoi?");
 		}
-		*/
+		
 	}
 	return 0;
 }

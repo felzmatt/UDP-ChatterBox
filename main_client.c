@@ -39,10 +39,10 @@ int main() {
 	int n, len;
 
 	Packet pack = {0};
-	pack.type = NEWUSER;
-	strncpy(pack.sender, "matteo", 6);
+	pack.type = LOGIN;
+	strncpy(pack.sender, "matteo23", 8);
 	// strncpy(pack.recipient, "gesù", 5);
-	strncpy(pack.data, "topolin0",8);
+	strncpy(pack.data, "cavallo",7);
 
 	char buffer[MAXLINE] = {0};
 
