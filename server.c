@@ -205,7 +205,9 @@ void handle_login(int socket, list_t * users, Packet * packet, struct sockaddr *
                 written_bytes = 0;
                 written_bytes = sendto(socket, LOGGED_USER, logged_len, MSG_CONFIRM, client_addr, sock_len);
             } while ( written_bytes != logged_len);
-
+            // NB: we are also copying information about client connection
+            memcpy( &(ret -> client_address), client_addr, sock_len);
+            // set flag online
             ret -> online = TRUE;
 
         } else {
@@ -219,4 +221,83 @@ void handle_login(int socket, list_t * users, Packet * packet, struct sockaddr *
         }
 
     }
+}
+
+void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t sock_len, list_node_ops * ops)
+{
+    /**
+     * Handle the MESSAGE request
+     * also here the client interactivity is blocked untile he receives one among the possible response to this message
+     * the  packet is composed as follow
+     * type = MESSAGE
+     * sender = <username of sender>
+     * recipient = <username of recipient>
+     * data = <body of message>
+     */ 
+    printf("Handling MESSAGE\n");
+    // initialize variables
+    char sender[UNAME_MAX_LEN] = {0};
+    char recipient[UNAME_MAX_LEN] = {0};
+    char data[DATA_MAX_LEN] = {0};
+    // copy data from packet
+    // IN CASE OF ERROR COME HERE AND SEE THE strncpy
+    sprintf(sender, "%s", packet -> sender);
+    sprintf(recipient, "%s", packet -> recipient);
+    strncpy(data, packet -> data, DATA_MAX_LEN);
+
+    int sender_len = strlen(sender);
+    int recipient_len = strlen(recipient);
+    int data_len = strlen(data);
+    
+    // looking for recipient
+    User * ret = find_user_by_username( users, recipient );
+
+    printf("Ho trovato il recipient %s\n", recipient);
+    printUser(ret);
+    
+    int written_bytes = 0;
+    
+    int not_found_user_len = strlen( USER_NOT_FOUND );
+    int not_online_user_len = strlen( USER_NOT_ONLINE );
+    int message_sent_len = strlen( SENT_MESSAGE );
+
+    // behaviour depends on existence and connection of the indended recipient
+    if ( ret == NULL )
+    {
+        // user is not registered
+        do {
+            written_bytes = 0;
+            written_bytes = sendto(socket, USER_NOT_FOUND, not_found_user_len, MSG_CONFIRM, client_addr, sock_len);
+        } while ( written_bytes != not_found_user_len);
+    } else {
+        
+        if ( ret -> online == FALSE )
+        {
+            // user not connected
+            do {
+                written_bytes = 0;
+                written_bytes = sendto(socket, USER_NOT_ONLINE, not_online_user_len, MSG_CONFIRM, client_addr, sock_len);
+            } while ( written_bytes != not_online_user_len);
+        
+        } else {
+            // user is connected
+
+            // try to send message to recipient
+            // note that we are sending to the address of ret
+            do {
+                written_bytes = 0;
+                written_bytes = sendto( socket, data, data_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
+            } while ( written_bytes != data_len);
+
+            // at this point we have to unlock the waiting sender
+
+            do {
+                written_bytes = 0;
+                written_bytes = sendto( socket, SENT_MESSAGE, message_sent_len, MSG_CONFIRM, client_addr, sock_len );
+            } while ( written_bytes != message_sent_len);
+
+
+
+        }
+    } 
 }

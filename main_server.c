@@ -105,17 +105,20 @@ int main() {
 		}
 		*/
 		
-		switch ( req )
-		{
-			case NEWUSER:
-				handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
+		if ( req == NEWUSER)
+			handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
 				
-			case LOGIN:
-				handle_login( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
-				
-			default:
-				printf("ma che vuoi?");
+		else if ( req == LOGIN) {
+			handle_login( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
+			print_list(&users);
 		}
+
+		else if ( req == MESSAGE)
+			handle_message( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
+				
+		else
+			printf("ma che vuoi?");
+		
 		
 	}
 	return 0;
