@@ -8,7 +8,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "list.h"
 #include "server.h"
+#include "client.h"
 
 
 #define MAXLINE 1024
@@ -19,7 +21,15 @@
 
 // Driver code
 // Future implementation require ip address in input
+
+Boolean CONNECTED = FALSE;
+
 int main(int argc, char ** argv ) {
+
+	printf("%s%s%s\n", CYAN, PRETTY_WELCOME, END_COLOR);
+
+	printf("You need to login in order to use this service.\nIf don't have done yet, register!\n");
+
     
 	int sockfd;
 	int port = 8080;
