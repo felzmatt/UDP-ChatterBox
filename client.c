@@ -186,8 +186,9 @@ void interactivity( void * args)
 		} else if ( strncmp( command, "SPM", ret) == 0 ) {
 			
 			// printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
-			// ret = login_command(sockfd, &me, &servaddr, len);
-			printf("Show Pending Messages\n");
+			ret = spm_command( targs -> inbox);
+			// printf("Show Pending Messages\n");
+            printf("return code %d\n", ret);
 		
 		} else if ( strncmp( command, "LOGOUT", ret) == 0 ) {
 			
@@ -247,9 +248,26 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
 
 }
 
+int spm_command( MessageBox * inbox )
+{
+    int i;
+    int last_read = inbox -> last_read;
+    int size = inbox -> size;
+    Packet * pack;
+    for ( i = last_read; i < size; i++ )
+    {
+        pack = inbox -> message_buffer[i];
+        printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+
+    }
+    inbox -> last_read = size - 1;
+}
+
 void receiving( void * args )
 {
-    printf("sono il thread di receiving\n");
+
+    // NO PRINT OR INPUT FROM COMMAND LINE INSIDE HERE
+    
     thread_args_t * targs = ( thread_args_t *)args;
 
     Packet * pack = (Packet*) calloc (1, sizeof(Packet));
@@ -268,7 +286,8 @@ void receiving( void * args )
         
        
 
-        printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+        // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+        targs -> inbox -> message_buffer[targs ->inbox -> size++] = pack;
 
        
         
