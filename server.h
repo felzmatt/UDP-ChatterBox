@@ -28,7 +28,7 @@
 #define USER_NOT_ONLINE "THIS USER IS OFFLINE\0"
 #define SENT_MESSAGE "CORRECTLY SENT MESSAGE\0"
 
-#define handle_error(msg) do { fprintf(stderr,"%s\n",msg); exit(-1); }while(1);
+
 
 
 typedef enum type {

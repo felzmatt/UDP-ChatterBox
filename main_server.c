@@ -67,7 +67,7 @@ int main() {
 	// main activity loop
 	struct sockaddr_in sender_addr;
 	struct sockaddr_in recipient_addr;
-	int ret;
+	
 	int read_bytes;
 	
 	socklen_t sender_addr_len = (socklen_t)sizeof(sender_addr);

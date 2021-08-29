@@ -14,8 +14,8 @@
 
 struct list_node;
 
-typedef int (*list_node_print) (struct list_node*);
-typedef int (*list_node_destroy) (struct list_node*);
+typedef void (*list_node_print) (struct list_node*);
+typedef void (*list_node_destroy) (struct list_node*);
 
 typedef struct ops {
     list_node_print print_fn;

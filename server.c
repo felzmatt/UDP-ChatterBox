@@ -121,10 +121,12 @@ void handle_new_user(int socket, list_t * users, Packet * packet, struct sockadd
     printf("Handling NEWUSER\n");
     char username[UNAME_MAX_LEN] = {0};
     char password[PWD_MAX_LEN] = {0};
-    sprintf(username, "%s", packet -> sender);
-    sprintf(password, "%s", packet -> data);
-    int username_len = strlen(username);
-    int password_len = strlen(password);
+    
+    int uname_len = strlen( packet -> sender);
+    int pwd_len = strlen( packet -> data );
+    
+    strncpy( username, packet -> sender, uname_len );
+    strncpy( password, packet -> data, pwd_len );
     
     User * ret = find_user_by_username( users, username);
     
@@ -143,8 +145,8 @@ void handle_new_user(int socket, list_t * users, Packet * packet, struct sockadd
     } else {
         // crea utente e rispondi con ACK
         User * added_user = ( User* ) calloc (1, sizeof(User));
-        strncpy( added_user -> username, username, username_len);
-        strncpy( added_user -> password, password, password_len);
+        strncpy( added_user -> username, username, uname_len);
+        strncpy( added_user -> password, password, pwd_len);
         added_user -> online = FALSE;
         init_list_node( &(added_user -> node), ops);
         append_list_node(users, &(added_user -> node) );
@@ -174,9 +176,13 @@ void handle_login(int socket, list_t * users, Packet * packet, struct sockaddr *
     printf("Handling LOGIN\n");
     char username[UNAME_MAX_LEN] = {0};
     char password[PWD_MAX_LEN] = {0};
-    sprintf(username, "%s", packet -> sender);
-    sprintf(password, "%s", packet -> data);
-    int username_len = strlen(username);
+    
+    int uname_len = strlen( packet -> sender);
+    int pwd_len = strlen( packet -> data );
+    
+    strncpy( username, packet -> sender, uname_len );
+    strncpy( password, packet -> data, pwd_len );
+    // int username_len = strlen(username);
     int password_len = strlen(password);
     
     User * ret = find_user_by_username( users, username);
@@ -245,15 +251,15 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     sprintf(recipient, "%s", packet -> recipient);
     strncpy(data, packet -> data, DATA_MAX_LEN);
 
-    int sender_len = strlen(sender);
-    int recipient_len = strlen(recipient);
+    // int sender_len = strlen(sender);
+    // int recipient_len = strlen(recipient);
     int data_len = strlen(data);
     
     // looking for recipient
     User * ret = find_user_by_username( users, recipient );
 
     printf("Ho trovato il recipient %s\n", recipient);
-    printUser(ret);
+    printUser((list_node_t*)ret);
     
     int written_bytes = 0;
     
