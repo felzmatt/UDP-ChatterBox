@@ -1,5 +1,6 @@
 #pragma once
 
+#include <semaphore.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -7,6 +8,8 @@
 
 #include "list.h"
 #include "server.h"
+
+#define MAX_PENDINGS 512 
 
 #define RECEIVER_THREAD 0
 #define INTERACTIVE_THREAD 1
@@ -25,11 +28,35 @@
 
 #define COMMAND_MAX_LEN 20
 
+typedef struct message_box_s {
+    
+    int size;
+    int last_read;
+    Packet message_buffer[MAX_PENDINGS];
+
+} MessageBox;
+
 typedef struct myinfo {
     char username[UNAME_MAX_LEN];
     char password[PWD_MAX_LEN];
     Boolean connected;
 } MyInfo;
+
+typedef struct thread_args_s {
+    
+    // my info
+    MyInfo * me;
+    // connection details
+    int socket;
+    struct sockaddr_in * servaddr;
+    socklen_t servaddr_len;
+    // message inbox
+    MessageBox * inbox;
+    sem_t semaphore;
+
+} thread_args_t;
+
+
 
 int get_user_input(const char * label, char * input, int maxlen);
 
@@ -86,3 +113,7 @@ int get_user_input(const char * label, char * input, int maxlen);
 
 int newuser_command( int socket, struct sockaddr * servaddr, socklen_t servaddr_len );
 int login_command( int socket, MyInfo * me,  struct sockaddr * servaddr, socklen_t servaddr_len );
+
+void interactivity( void * args );
+
+void receiving( void * args );

@@ -31,7 +31,7 @@ list_test:	list_test.c $(LIBS)
 server: main_server.c server.c $(LIBS) 
 	$(CC) $(CCOPTS) -o $@ $^
 
-client: main_client.c client.c $(LIBS)
+client: main_client.c client.c $(LIBS) -lpthread
 	$(CC) $(CCOPTS) -o $@ $^
 
 clean:

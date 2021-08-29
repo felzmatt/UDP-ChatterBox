@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <semaphore.h>
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -24,6 +26,8 @@
 
 // Boolean CONNECTED = FALSE;
 
+pthread_t threads[2] = { 0 };
+
 int main(int argc, char ** argv ) {
 
 	printf("%s%s%s\n", CYAN, PRETTY_WELCOME, END_COLOR);
@@ -33,6 +37,10 @@ int main(int argc, char ** argv ) {
     
 	int sockfd;
 	int port = 8080;
+
+	thread_args_t targs = { 0 };
+
+	
 	
 	struct sockaddr_in	 servaddr;
 	
@@ -80,16 +88,48 @@ int main(int argc, char ** argv ) {
 		} else {
 			printf("Qui non dovresti starci\n");
 		}
-		
-		
-
-
 	}
+
+	printf("starting second phse\n");
+
+	// Now starts the intersting part
+
+	// first of all alloc the message inbox
+
+	MessageBox * inbox = ( MessageBox *) calloc( 1, sizeof(MessageBox));
+
+	// make the targs point to already used structures
+
+	targs.me = &me;
+	targs.servaddr = &servaddr;
+	targs.servaddr_len = len;
+	targs.socket = sockfd;
+	targs.inbox = inbox;
+
+	// semaphore to securely access the message inbox
+	if ( sem_init( &targs.semaphore, 0, 1) == -1 )
+		handle_error("Error initializing semaphore");
+
+	
+	// starting threads
+	pthread_create( &threads[INTERACTIVE_THREAD] , NULL , interactivity, &targs );
+	pthread_create( &threads[RECEIVER_THREAD] , NULL , receiving, &targs );
+
+	//printf("exiting from all\n");
+
+	int ret_thread;
+	pthread_join( &threads[INTERACTIVE_THREAD], NULL);
+	pthread_join( &threads[RECEIVER_THREAD], NULL);
+	
+
+	
+	
+	
 
 	
 
 
-	/*
+    /*
 	
 	int n;
 

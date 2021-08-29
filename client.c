@@ -145,3 +145,60 @@ int login_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_
         return -10;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * --------------------  Threads functioanlity --------------------------------
+ */
+
+void interactivity( void * args)
+{
+    /**
+     * Activity of interactive thread
+     */
+    thread_args_t * targs = ( thread_args_t *)args;
+
+    int ret;
+    char command[COMMAND_MAX_LEN] = { 0 };
+
+    while ( targs -> me -> connected )
+	{
+		printf("%sType your choice then press Enter%s\n[1] PRIVATE MESSAGE (PM)\n[2] SHOW PENDING MESSAGES (SPM)\n[3] LOGOUT\n",GREEN, END_COLOR);
+
+		ret = get_user_input("PM or SPM or LOGOUT\n>> ", command, COMMAND_MAX_LEN);
+		
+		if ( strncmp(command, "PM", ret) == 0) {
+			// ret = newuser_command( sockfd, &servaddr, len);
+			printf("Private Message\n");
+
+		} else if ( strncmp( command, "SPM", ret) == 0 ) {
+			
+			// printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
+			// ret = login_command(sockfd, &me, &servaddr, len);
+			printf("Show Pending Messages\n");
+		
+		} else if ( strncmp( command, "LOGOUT", ret) == 0 ) {
+			
+			printf("Logout\n");
+		
+		} else {
+			printf("Qui non dovresti starci\n");
+		}
+
+	}
+}
+
+void receiving( void * args )
+{
+    return;
+}
