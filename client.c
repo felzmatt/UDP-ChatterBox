@@ -268,6 +268,7 @@ int spm_command( MessageBox * inbox )
 
     }
     inbox -> last_read = size - 1;
+    return size;
 }
 
 void receiving( void * args )
@@ -296,7 +297,8 @@ void receiving( void * args )
        
 
         // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
-        targs -> inbox -> message_buffer[targs ->inbox -> size++] = pack;
+        targs -> inbox -> message_buffer[targs ->inbox -> size] = pack;
+        targs -> inbox -> size += 1;
 
         // sem_post( &( targs -> semaphore));
 
