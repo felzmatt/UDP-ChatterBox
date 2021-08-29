@@ -23,6 +23,11 @@
 
 #define PRETTY_WELCOME  "Client process to interact with UDP-ChatterBox\0"
 
+typedef struct myinfo {
+    char username[UNAME_MAX_LEN];
+    char password[PWD_MAX_LEN];
+} MyInfo;
+
 
 /**
  * ------------- RETURN CODES -------------------
@@ -74,4 +79,4 @@
 
 // NOT LOGGED
 
-int newuser_command();
+int newuser_command( int socket, struct sockaddr * servaddr, socklen_t servaddr_len );

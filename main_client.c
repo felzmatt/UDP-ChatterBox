@@ -51,6 +51,12 @@ int main(int argc, char ** argv ) {
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(port);
 	servaddr.sin_addr.s_addr = INADDR_ANY;
+
+	int ret = newuser_command(sockfd, &servaddr, len);
+	printf("return code : %d\n", ret);
+
+
+	/*
 	
 	int n;
 
@@ -137,6 +143,7 @@ int main(int argc, char ** argv ) {
 		buffer[n] = '\n';
 		printf("Message result %s\n", buffer);
 	}
+	*/
 	
 	
 	

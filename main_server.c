@@ -105,8 +105,10 @@ int main() {
 		}
 		*/
 		
-		if ( req == NEWUSER)
+		if ( req == NEWUSER) {
 			handle_new_user( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
+			print_list(&users);
+		}
 				
 		else if ( req == LOGIN) {
 			handle_login( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
