@@ -281,6 +281,7 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     if ( ret == NULL )
     {
         // user is not registered
+
         do {
             written_bytes = 0;
             written_bytes = sendto(socket, USER_NOT_FOUND, not_found_user_len, MSG_CONFIRM, client_addr, sock_len);
@@ -302,11 +303,12 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
 
             // try to send message to recipient
             // note that we are sending to the address of ret
+            /*
             do {
                 written_bytes = 0;
                 written_bytes = sendto( socket, &pack, pack_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
             } while ( written_bytes != pack_len);
-
+            */
             // at this point we have to unlock the waiting sender
 
             do {

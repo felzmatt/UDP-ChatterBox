@@ -179,7 +179,7 @@ void interactivity( void * args)
 		
 		if ( strncmp(command, "PM", ret) == 0) {
 			// ret = newuser_command( sockfd, &servaddr, len);
-            ret = pm_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len);
+            ret = pm_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len, &(targs -> semaphore) );
             printf("return code : %d\n", ret);
 			// printf("Private Message\n");
 
@@ -201,7 +201,7 @@ void interactivity( void * args)
 	}
 }
 
-int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len) 
+int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len, sem_t * semaphore) 
 {
 
     Packet pack = { 0 };
@@ -215,6 +215,7 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
     int pack_len = sizeof(Packet);
 
     // send request to the server
+    
 
     int written_bytes;
     do {
@@ -227,7 +228,10 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
     int read_bytes = 0;
     char response[1024] = { 0 };
 
+
+    /*
     read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
+    
 
     printf("%s\n", response);
 
@@ -243,6 +247,9 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
         printf("This branch should not be printed, in any case..\n");
         return -10;
     }
+    */
+
+   return 0;
 
 
 
@@ -278,6 +285,8 @@ void receiving( void * args )
 
     while ( targs -> me -> connected )
     {
+
+        // sem_wait( &(targs -> semaphore));
        
             read_bytes = 0;
             memset( pack, 0, pack_len);
@@ -288,6 +297,8 @@ void receiving( void * args )
 
         // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
         targs -> inbox -> message_buffer[targs ->inbox -> size++] = pack;
+
+        // sem_post( &( targs -> semaphore));
 
        
         
