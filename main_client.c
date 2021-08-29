@@ -52,8 +52,39 @@ int main(int argc, char ** argv ) {
 	servaddr.sin_port = htons(port);
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 
-	int ret = newuser_command(sockfd, &servaddr, len);
-	printf("return code : %d\n", ret);
+	// at this point, you have to stay stuck until you successfully login
+
+	MyInfo me = { 0 };
+	char command[COMMAND_MAX_LEN] = {0};
+	int ret;
+
+	while ( ! CONNECTED )
+	{
+		
+		printf("Type your choice then press Enter\n[1] NEWUSER\n[2] LOGIN\n");
+		printf(">> ");
+		fflush(stdout);
+		
+		ret = get_user_input("NEWUSER or LOGIN\n>> ", command, COMMAND_MAX_LEN);
+		
+		if ( strncmp(command, "NEWUSER", ret) == 0) {
+			ret = newuser_command( sockfd, &servaddr, len);
+			printf("return code : %d\n", ret);
+
+		} else if ( strncmp( command, "LOGIN", ret) == 0 ) {
+			
+			printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
+		
+		} else {
+			printf("Qui non dovresti starci\n");
+		}
+		
+		
+
+
+	}
+
+	
 
 
 	/*

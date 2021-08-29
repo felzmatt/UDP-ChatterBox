@@ -13,6 +13,17 @@
 #include "server.h"
 #include "client.h"
 
+int get_user_input(const char * label, char * input, int maxlen)
+{
+    int len;
+    printf("%s", label);
+    fflush(stdout);
+    fgets(input, maxlen , stdin);
+    len = strlen(input);
+    input[len - 1] = '\0';   // delete \n byte
+    return len;
+}
+
 int newuser_command(int socket, struct sockaddr * servaddr, socklen_t servaddr_len)
 {
     /**

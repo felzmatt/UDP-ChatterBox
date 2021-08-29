@@ -23,10 +23,14 @@
 
 #define PRETTY_WELCOME  "Client process to interact with UDP-ChatterBox\0"
 
+#define COMMAND_MAX_LEN 20
+
 typedef struct myinfo {
     char username[UNAME_MAX_LEN];
     char password[PWD_MAX_LEN];
 } MyInfo;
+
+int get_user_input(const char * label, char * input, int maxlen);
 
 
 /**
