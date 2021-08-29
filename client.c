@@ -40,7 +40,7 @@ int newuser_command(int socket, struct sockaddr * servaddr, socklen_t servaddr_l
     char username[UNAME_MAX_LEN] = {0};
     char password[PWD_MAX_LEN] = {0};
 
-    printf("[1] %sLOGIN PROCEDURE%s\n", CYAN,END_COLOR);
+    printf("[1] %sNEWUSER PROCEDURE%s\n", CYAN,END_COLOR);
     printf("USERNAME 16 CHAR: >> ");
     fflush(stdout);
     fgets(username, UNAME_MAX_LEN, stdin);
@@ -96,4 +96,52 @@ int newuser_command(int socket, struct sockaddr * servaddr, socklen_t servaddr_l
 
 
 
+}
+
+int login_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len )
+{
+
+    printf("[2] %sLOGIN PROCEDURE%s\n", CYAN,END_COLOR);
+
+    size_t pack_len = sizeof(Packet);
+    char username[UNAME_MAX_LEN] = {0};
+    char password[PWD_MAX_LEN] = {0};
+
+    Packet pack = { 0 };
+    pack.type = LOGIN;
+    int uname_len = get_user_input("USERNAME 16 CHAR: ", pack.sender, UNAME_MAX_LEN);
+    int pwd_len = get_user_input("PASSWORD 16 CHAR: ", pack.data, PWD_MAX_LEN);
+
+    // send request to the server
+
+    int written_bytes;
+    do {
+        written_bytes = 0;
+        written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
+    } while( written_bytes != pack_len );
+
+    // wait for response
+
+    int read_bytes = 0;
+    char response[1024] = { 0 };
+
+    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
+
+    printf("%s\n", response);
+
+    if ( strncmp(response, NOT_EXISTS_USER, read_bytes) == 0) {
+        return -1;
+    } else if (strncmp(response, WRONG_PASSWORD, read_bytes) == 0) {
+        return -2;
+    } else if ( strncmp( response, LOGGED_USER, read_bytes) == 0 ) {
+        // fill me with data
+        strncpy(me -> username, pack.sender, uname_len);
+        strncpy(me -> password, pack.data, pwd_len);
+        me -> connected = TRUE;
+        return 0;
+        
+    } else {
+        printf("This branch should not be printed, in any case..\n");
+        return -10;
+    }
 }

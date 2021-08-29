@@ -22,7 +22,7 @@
 // Driver code
 // Future implementation require ip address in input
 
-Boolean CONNECTED = FALSE;
+// Boolean CONNECTED = FALSE;
 
 int main(int argc, char ** argv ) {
 
@@ -58,7 +58,7 @@ int main(int argc, char ** argv ) {
 	char command[COMMAND_MAX_LEN] = {0};
 	int ret;
 
-	while ( ! CONNECTED )
+	while ( ! me.connected )
 	{
 		
 		printf("Type your choice then press Enter\n[1] NEWUSER\n[2] LOGIN\n");
@@ -73,7 +73,9 @@ int main(int argc, char ** argv ) {
 
 		} else if ( strncmp( command, "LOGIN", ret) == 0 ) {
 			
-			printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
+			// printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
+			ret = login_command(sockfd, &me, &servaddr, len);
+			printf("return code %d\n", ret);
 		
 		} else {
 			printf("Qui non dovresti starci\n");

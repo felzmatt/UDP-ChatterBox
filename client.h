@@ -28,6 +28,7 @@
 typedef struct myinfo {
     char username[UNAME_MAX_LEN];
     char password[PWD_MAX_LEN];
+    Boolean connected;
 } MyInfo;
 
 int get_user_input(const char * label, char * input, int maxlen);
@@ -84,3 +85,4 @@ int get_user_input(const char * label, char * input, int maxlen);
 // NOT LOGGED
 
 int newuser_command( int socket, struct sockaddr * servaddr, socklen_t servaddr_len );
+int login_command( int socket, MyInfo * me,  struct sockaddr * servaddr, socklen_t servaddr_len );
