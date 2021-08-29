@@ -110,7 +110,7 @@ int main(int argc, char ** argv ) {
 	if ( sem_init( &targs.semaphore, 0, 1) == -1 )
 		handle_error("Error initializing semaphore");
 
-	
+	/*
 	// starting threads
 	pthread_create( &threads[INTERACTIVE_THREAD] , NULL , interactivity, &targs );
 	pthread_create( &threads[RECEIVER_THREAD] , NULL , receiving, &targs );
@@ -120,6 +120,11 @@ int main(int argc, char ** argv ) {
 	int ret_thread;
 	pthread_join( threads[INTERACTIVE_THREAD], NULL);
 	pthread_join( threads[RECEIVER_THREAD], NULL);
+	*/
+
+	if ( strncmp(me.username, "matteo23", 8) == 0) receiving( &targs);
+	else if ( strncmp(me.username, "pippo", 5) == 0) receiving(&targs);
+	else interactivity(&targs);
 	
 
 	

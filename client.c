@@ -260,19 +260,17 @@ void receiving( void * args )
 
     while ( targs -> me -> connected )
     {
-        do {
+       
             read_bytes = 0;
             memset( pack, 0, pack_len);
 
             read_bytes = recvfrom( targs -> socket, pack, pack_len, MSG_WAITALL, targs -> servaddr, targs -> servaddr_len);
         
-        } while( read_bytes != pack_len);
+       
 
         printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
 
-        sem_wait( &(targs -> semaphore));
-        targs -> inbox->message_buffer[ targs ->inbox -> size++] = pack;
-        sem_post( &(targs -> semaphore));
+       
         
     }
 }
