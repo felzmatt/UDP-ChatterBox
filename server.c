@@ -247,8 +247,10 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     char data[DATA_MAX_LEN] = {0};
     // copy data from packet
     // IN CASE OF ERROR COME HERE AND SEE THE strncpy
-    sprintf(sender, "%s", packet -> sender);
-    sprintf(recipient, "%s", packet -> recipient);
+    int sender_len = strlen(packet ->sender);
+    int recipient_len = strlen(packet -> recipient);
+    strncpy(recipient, packet -> recipient, recipient_len);
+    strncpy(sender, packet -> sender, sender_len);
     strncpy(data, packet -> data, DATA_MAX_LEN);
 
     // int sender_len = strlen(sender);
@@ -266,6 +268,14 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     int not_found_user_len = strlen( USER_NOT_FOUND );
     int not_online_user_len = strlen( USER_NOT_ONLINE );
     int message_sent_len = strlen( SENT_MESSAGE );
+
+    Packet pack = { 0 };
+    pack.type = MESSAGE;
+    strncpy( pack.sender, sender, sender_len);
+    strncpy( pack.recipient, recipient, recipient_len);
+    strncpy( pack.data, data, data_len);
+
+    int pack_len = sizeof(Packet);
 
     // behaviour depends on existence and connection of the indended recipient
     if ( ret == NULL )
@@ -288,12 +298,14 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
         } else {
             // user is connected
 
+            printf("try to send message\n");
+
             // try to send message to recipient
             // note that we are sending to the address of ret
             do {
                 written_bytes = 0;
-                written_bytes = sendto( socket, data, data_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
-            } while ( written_bytes != data_len);
+                written_bytes = sendto( socket, &pack, pack_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
+            } while ( written_bytes != pack_len);
 
             // at this point we have to unlock the waiting sender
 
@@ -306,4 +318,5 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
 
         }
     } 
+    printf("sent message\n");
 }

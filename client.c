@@ -179,7 +179,9 @@ void interactivity( void * args)
 		
 		if ( strncmp(command, "PM", ret) == 0) {
 			// ret = newuser_command( sockfd, &servaddr, len);
-			printf("Private Message\n");
+            ret = pm_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len);
+            printf("return code : %d\n", ret);
+			// printf("Private Message\n");
 
 		} else if ( strncmp( command, "SPM", ret) == 0 ) {
 			
@@ -198,7 +200,79 @@ void interactivity( void * args)
 	}
 }
 
+int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len) 
+{
+
+    Packet pack = { 0 };
+    pack.type = MESSAGE;
+
+    int sender_len = strlen(me -> username);
+    strncpy( pack.sender, me -> username, sender_len);
+    int recipient_len = get_user_input("RECIPIENT MAX 16 CHAR: ", pack.recipient, UNAME_MAX_LEN);
+    int data_len = get_user_input("MESSAGE : ", pack.data, DATA_MAX_LEN);
+
+    int pack_len = sizeof(Packet);
+
+    // send request to the server
+
+    int written_bytes;
+    do {
+        written_bytes = 0;
+        written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
+    } while( written_bytes != pack_len );
+
+    // wait for response
+
+    int read_bytes = 0;
+    char response[1024] = { 0 };
+
+    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
+
+    printf("%s\n", response);
+
+    if ( strncmp(response, USER_NOT_FOUND, read_bytes) == 0) {
+        return -1;
+    } else if (strncmp(response, USER_NOT_ONLINE, read_bytes) == 0) {
+        return -2;
+    } else if ( strncmp( response, SENT_MESSAGE, read_bytes) == 0 ) {
+        
+        return 0;
+        
+    } else {
+        printf("This branch should not be printed, in any case..\n");
+        return -10;
+    }
+
+
+
+}
+
 void receiving( void * args )
 {
-    return;
+    printf("sono il thread di receiving\n");
+    thread_args_t * targs = ( thread_args_t *)args;
+
+    Packet * pack = (Packet*) calloc (1, sizeof(Packet));
+    int pack_len = sizeof(Packet);
+    int read_bytes = 0;
+    
+    // Receive message
+
+    while ( targs -> me -> connected )
+    {
+        do {
+            read_bytes = 0;
+            memset( pack, 0, pack_len);
+
+            read_bytes = recvfrom( targs -> socket, pack, pack_len, MSG_WAITALL, targs -> servaddr, targs -> servaddr_len);
+        
+        } while( read_bytes != pack_len);
+
+        printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+
+        sem_wait( &(targs -> semaphore));
+        targs -> inbox->message_buffer[ targs ->inbox -> size++] = pack;
+        sem_post( &(targs -> semaphore));
+        
+    }
 }

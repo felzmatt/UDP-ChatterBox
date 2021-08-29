@@ -32,7 +32,7 @@ typedef struct message_box_s {
     
     int size;
     int last_read;
-    Packet message_buffer[MAX_PENDINGS];
+    Packet * message_buffer[MAX_PENDINGS];
 
 } MessageBox;
 
@@ -116,4 +116,5 @@ int login_command( int socket, MyInfo * me,  struct sockaddr * servaddr, socklen
 
 void interactivity( void * args );
 
+int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len);
 void receiving( void * args );
