@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include "list.h"
+#include "mylist.h"
 #include "server.h"
 #include "client.h"
 
@@ -118,8 +118,8 @@ int main(int argc, char ** argv ) {
 	//printf("exiting from all\n");
 
 	int ret_thread;
-	pthread_join( &threads[INTERACTIVE_THREAD], NULL);
-	pthread_join( &threads[RECEIVER_THREAD], NULL);
+	pthread_join( threads[INTERACTIVE_THREAD], NULL);
+	pthread_join( threads[RECEIVER_THREAD], NULL);
 	
 
 	

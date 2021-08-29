@@ -2,11 +2,11 @@ CC=gcc
 CCOPTS=--std=gnu99 -Wall  -g
 AR=ar
 
-OBJS=list.o\
+OBJS=mylist.o\
 
-HEADERS=list.h
+HEADERS=mylist.h
 
-LIBS=liblist.a
+LIBS=myliblist.a
 
 BINS=list_test\
 
@@ -20,7 +20,7 @@ all:	$(LIBS) $(BINS)
 %.o:	%.c $(HEADERS)
 	$(CC) $(CCOPTS) -c -o $@  $<
 
-liblist.a: $(OBJS) 
+myliblist.a: $(OBJS) 
 	$(AR) -rcs $@ $^
 	$(RM) $(OBJS)
 

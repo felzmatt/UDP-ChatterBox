@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include "list.h"
+#include "mylist.h"
 #include "server.h"
 #include "client.h"
 

@@ -11,7 +11,7 @@
 
 
 
-#include "list.h"
+#include "mylist.h"
 #include "server.h"
 
 User * find_user_by_username( list_t * users, const char * username )

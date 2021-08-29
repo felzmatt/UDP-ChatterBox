@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include "list.h"
+#include "mylist.h"
 #include "server.h"
 
 #define MAX_PENDINGS 512 

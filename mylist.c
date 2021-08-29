@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "list.h"
+#include "mylist.h"
 
 
 int init_list_node ( list_node_t * node , list_node_ops * ops)
