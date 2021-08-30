@@ -264,13 +264,11 @@ int spm_command( MessageBox * inbox )
     if ( size == 0)
     {
         printf("No messages to be printed\n");
-    } else if ( last_read == size - 1) {
-        printf("You have read all messages already\n");
     } else {
         for ( i = last_read; i < size; i++ )
         {
             pack = inbox -> message_buffer[i];
-            printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+            printf("%s %s : %s %s\n",CYAN, pack -> sender, pack -> data, END_COLOR);
             inbox -> last_read = size - 1;
 
         }
