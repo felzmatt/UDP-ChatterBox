@@ -1,6 +1,0 @@
-per ora stiamo lavorando sul server, che gestisce:
-	NEWUSER
-	LOGIN
-il client per ora è brutale e serve solo per testare il server,
-in un futuro prossimo (molto prossimo) sarà dual thread per gestire,
-l'interazione con l'utente
