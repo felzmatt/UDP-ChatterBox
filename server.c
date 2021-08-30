@@ -328,6 +328,8 @@ void handle_disconnect(int socket, list_t * users, Packet * packet, struct socka
 {
     char username[UNAME_MAX_LEN] = { 0 };
     int uname_len = strlen(packet -> sender);
+    int written_bytes = 0;
+    int disconn_len = strlen(DISCONNECTED_USER);
     // printf("DEBUG %s %lu\n", packet -> sender, uname_len);
     strncpy(username, packet -> sender, UNAME_MAX_LEN);
     User * user = find_user_by_username( users, packet -> sender);
@@ -337,6 +339,7 @@ void handle_disconnect(int socket, list_t * users, Packet * packet, struct socka
         return;
     }
     user -> online = FALSE;
+    written_bytes = sendto(socket, DISCONNECTED_USER, disconn_len, MSG_CONFIRM, client_addr, sock_len);
     printf("Successfully disconnected user\n");
     return;
 

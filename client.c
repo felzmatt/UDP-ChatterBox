@@ -281,6 +281,7 @@ void receiving( void * args )
 {
 
     // NO PRINT OR INPUT FROM COMMAND LINE INSIDE HERE
+    int disconn_len = strlen(DISCONNECTED_USER);
     
     thread_args_t * targs = ( thread_args_t *)args;
 
@@ -300,6 +301,10 @@ void receiving( void * args )
             pack = (Packet*) calloc (1, sizeof(Packet));
 
             read_bytes = recvfrom( targs -> socket, pack, pack_len, MSG_WAITALL, targs -> servaddr, targs -> servaddr_len);
+
+            if ( strncmp(pack, DISCONNECTED_USER, read_bytes) == 0) {
+                break;
+            }
         
        
 
