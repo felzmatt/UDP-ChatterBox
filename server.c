@@ -18,12 +18,13 @@ User * find_user_by_username( list_t * users, const char * username )
 {
     // scan all the list in search of user with username == username if it exist
     int size = users -> items;
+    int uname_len = strlen(username);
     list_node_t * node = users -> head;
     User * user = (User*) node;
     int i;
     for ( i = 1; i <= size; i++)
     {
-        if ( strcmp(username, user -> username) == 0 ){
+        if ( strncmp(username, user -> username, uname_len) == 0 ){
             return user;
         }
         node = node -> next;
@@ -321,4 +322,22 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
         }
     } 
     printf("sent message\n");
+}
+
+void handle_disconnect(int socket, list_t * users, Packet * packet, struct sockaddr * client_addr, socklen_t sock_len, list_node_ops * ops)
+{
+    char username[UNAME_MAX_LEN] = { 0 };
+    int uname_len = strlen(packet -> sender);
+    // printf("DEBUG %s %lu\n", packet -> sender, uname_len);
+    strncpy(username, packet -> sender, UNAME_MAX_LEN);
+    User * user = find_user_by_username( users, packet -> sender);
+    // printUser(user);
+    if ( user == NULL ) {
+        printf("This string should never be printed.. error in finding user\n");
+        return;
+    }
+    user -> online = FALSE;
+    printf("Successfully disconnected user\n");
+    return;
+
 }

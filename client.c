@@ -192,7 +192,7 @@ void interactivity( void * args)
 		
 		} else if ( strncmp( command, "LOGOUT", ret) == 0 ) {
 			
-			printf("Logout\n");
+			ret = logout_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len);
 		
 		} else {
 			printf("Qui non dovresti starci\n");
@@ -313,4 +313,19 @@ void receiving( void * args )
        
         
     }
+}
+
+int logout_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len)
+{
+    Packet pack = { 0 };
+    pack.type = DISCONNECT;
+    int pack_len = sizeof(Packet);
+    int uname_len = strlen(me -> username);
+    strncpy( pack.sender, me -> username, uname_len);
+
+    int written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
+
+    me -> connected = FALSE;
+    printf("%s DISCONNECTED%s\n", RED, END_COLOR);
+    return 0;
 }

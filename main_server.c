@@ -117,6 +117,11 @@ int main() {
 
 		else if ( req == MESSAGE)
 			handle_message( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops );
+
+		else if ( req == DISCONNECT ) {
+			handle_disconnect( sockfd, &users, &pack, ( struct sockaddr *)&sender_addr, sender_addr_len, &user_ops);
+			print_list(&users);
+		}
 				
 		else
 			printf("ma che vuoi?");
