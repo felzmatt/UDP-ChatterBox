@@ -261,13 +261,21 @@ int spm_command( MessageBox * inbox )
     int last_read = inbox -> last_read;
     int size = inbox -> size;
     Packet * pack;
-    for ( i = last_read; i < size; i++ )
+    if ( size == 0)
     {
-        pack = inbox -> message_buffer[i];
-        printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+        printf("No messages to be printed\n");
+    } else if ( last_read == size - 1) {
+        printf("You have read all messages already\n");
+    } else {
+        for ( i = last_read; i < size; i++ )
+        {
+            pack = inbox -> message_buffer[i];
+            printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+            inbox -> last_read = size - 1;
 
+        }
     }
-    inbox -> last_read = size - 1;
+    
     return size;
 }
 
@@ -298,10 +306,11 @@ void receiving( void * args )
        
 
         // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
+        //sem_wait( &(targs -> semaphore));
         targs -> inbox -> message_buffer[targs ->inbox -> size] = pack;
         targs -> inbox -> size += 1;
 
-        // sem_post( &( targs -> semaphore));
+        //sem_post( &( targs -> semaphore));
 
        
         
