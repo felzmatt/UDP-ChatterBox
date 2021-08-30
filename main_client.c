@@ -53,7 +53,7 @@ int main(int argc, char ** argv ) {
 	}
 
 	memset(&servaddr, 0, sizeof(servaddr));
-	socklen_t len = sizeof(servaddr);
+	socklen_t len = (socklen_t)sizeof(servaddr);
 	
 	// Filling server information
 	servaddr.sin_family = AF_INET;
@@ -78,13 +78,13 @@ int main(int argc, char ** argv ) {
 			ret = get_user_input("NEWUSER or LOGIN\n>> ", command, COMMAND_MAX_LEN);
 			
 			if ( strncmp(command, "NEWUSER", ret) == 0) {
-				ret = newuser_command( sockfd, &servaddr, len);
+				ret = newuser_command( sockfd, (struct sockaddr*)&servaddr, len);
 				printf("return code : %d\n", ret);
 
 			} else if ( strncmp( command, "LOGIN", ret) == 0 ) {
 				
 				// printf("%sLogin is under implementation phase%s\n", RED, END_COLOR);
-				ret = login_command(sockfd, &me, &servaddr, len);
+				ret = login_command(sockfd, &me, (struct sockaddr*) &servaddr, len);
 				printf("return code %d\n", ret);
 			
 			} else {
@@ -116,7 +116,7 @@ int main(int argc, char ** argv ) {
 
 		//printf("exiting from all\n");
 
-		int ret_thread;
+		
 		pthread_join( threads[INTERACTIVE_THREAD], NULL);
 		pthread_join( threads[RECEIVER_THREAD], NULL);
 	}

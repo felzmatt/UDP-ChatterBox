@@ -79,7 +79,8 @@ int newuser_command(int socket, struct sockaddr * servaddr, socklen_t servaddr_l
 
     
     read_bytes = 0;
-    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
+    // occhio al puntatore della size della socket
+    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, &servaddr_len);
 
     printf("%s\n", response);
     if ( strncmp( response, EXISTS_ALREADY, read_bytes) == 0 )
@@ -104,8 +105,7 @@ int login_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_
     printf("[2] %sLOGIN PROCEDURE%s\n", CYAN,END_COLOR);
 
     size_t pack_len = sizeof(Packet);
-    char username[UNAME_MAX_LEN] = {0};
-    char password[PWD_MAX_LEN] = {0};
+    
 
     Packet pack = { 0 };
     pack.type = LOGIN;
@@ -125,7 +125,8 @@ int login_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_
     int read_bytes = 0;
     char response[1024] = { 0 };
 
-    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
+    // occhio al puntatore della size dellla socket
+    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, &servaddr_len);
 
     printf("%s\n", response);
 
@@ -179,7 +180,7 @@ void interactivity( void * args)
 		
 		if ( strncmp(command, "PM", ret) == 0) {
 			// ret = newuser_command( sockfd, &servaddr, len);
-            ret = pm_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len, &(targs -> semaphore) );
+            ret = pm_command( targs -> socket, targs -> me, (struct sockaddr*)targs -> servaddr, targs -> servaddr_len, &(targs -> semaphore) );
             printf("return code : %d\n", ret);
 			// printf("Private Message\n");
 
@@ -192,7 +193,7 @@ void interactivity( void * args)
 		
 		} else if ( strncmp( command, "LOGOUT", ret) == 0 ) {
 			
-			ret = logout_command( targs -> socket, targs -> me, targs -> servaddr, targs -> servaddr_len);
+			ret = logout_command( targs -> socket, targs -> me, (struct sockaddr*)targs -> servaddr, targs -> servaddr_len);
 		
 		} else {
 			printf("Qui non dovresti starci\n");
@@ -209,8 +210,8 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
 
     int sender_len = strlen(me -> username);
     strncpy( pack.sender, me -> username, sender_len);
-    int recipient_len = get_user_input("RECIPIENT MAX 16 CHAR: ", pack.recipient, UNAME_MAX_LEN);
-    int data_len = get_user_input("MESSAGE : ", pack.data, DATA_MAX_LEN);
+    get_user_input("RECIPIENT MAX 16 CHAR: ", pack.recipient, UNAME_MAX_LEN);
+    get_user_input("MESSAGE : ", pack.data, DATA_MAX_LEN);
 
     int pack_len = sizeof(Packet);
 
@@ -223,31 +224,7 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
         written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
     } while( written_bytes != pack_len );
 
-    // wait for response
-
-    int read_bytes = 0;
-    char response[1024] = { 0 };
-
-
-    /*
-    read_bytes = recvfrom(socket, response, 1024, MSG_WAITALL, servaddr, servaddr_len);
     
-
-    printf("%s\n", response);
-
-    if ( strncmp(response, USER_NOT_FOUND, read_bytes) == 0) {
-        return -1;
-    } else if (strncmp(response, USER_NOT_ONLINE, read_bytes) == 0) {
-        return -2;
-    } else if ( strncmp( response, SENT_MESSAGE, read_bytes) == 0 ) {
-        
-        return 0;
-        
-    } else {
-        printf("This branch should not be printed, in any case..\n");
-        return -10;
-    }
-    */
 
    return 0;
 
@@ -267,7 +244,7 @@ int spm_command( MessageBox * inbox )
     } else {
         for ( i = last_read; i < size; i++ )
         {
-            pack = inbox -> message_buffer[i];
+            pack = &(inbox -> message_buffer[i]);
             printf("%s %s : %s %s\n",CYAN, pack -> sender, pack -> data, END_COLOR);
             inbox -> last_read = size - 1;
 
@@ -281,13 +258,14 @@ void receiving( void * args )
 {
 
     // NO PRINT OR INPUT FROM COMMAND LINE INSIDE HERE
-    int disconn_len = strlen(DISCONNECTED_USER);
+    
     
     thread_args_t * targs = ( thread_args_t *)args;
 
-    Packet * pack; 
+    //Packet * pack; 
     int pack_len = sizeof(Packet);
     int read_bytes = 0;
+    int idx;
     
     // Receive message
 
@@ -297,12 +275,13 @@ void receiving( void * args )
         // sem_wait( &(targs -> semaphore));
        
             read_bytes = 0;
+            idx = targs -> inbox -> size;
             // memset( pack, 0, pack_len);
-            pack = (Packet*) calloc (1, sizeof(Packet));
+            //pack = (Packet*) calloc (1, sizeof(Packet));
 
-            read_bytes = recvfrom( targs -> socket, pack, pack_len, MSG_WAITALL, targs -> servaddr, targs -> servaddr_len);
+            read_bytes = recvfrom( targs -> socket, &(targs->inbox->message_buffer[idx]), pack_len, MSG_WAITALL, (struct sockaddr*) targs -> servaddr, &(targs -> servaddr_len) );
 
-            if ( strncmp(pack, DISCONNECTED_USER, read_bytes) == 0) {
+            if ( strncmp((const char*)&(targs->inbox->message_buffer[idx]), DISCONNECTED_USER, read_bytes) == 0) {
                 break;
             }
         
@@ -310,7 +289,7 @@ void receiving( void * args )
 
         // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
         //sem_wait( &(targs -> semaphore));
-        targs -> inbox -> message_buffer[targs ->inbox -> size] = pack;
+        
         targs -> inbox -> size += 1;
 
         //sem_post( &( targs -> semaphore));
@@ -324,11 +303,12 @@ int logout_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen
 {
     Packet pack = { 0 };
     pack.type = DISCONNECT;
+    int written_bytes;
     int pack_len = sizeof(Packet);
     int uname_len = strlen(me -> username);
     strncpy( pack.sender, me -> username, uname_len);
 
-    int written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
+    written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, servaddr, servaddr_len);
 
     me -> connected = FALSE;
     printf("%s DISCONNECTED%s\n", RED, END_COLOR);
