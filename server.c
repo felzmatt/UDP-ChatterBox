@@ -313,8 +313,8 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
 
             do {
                 written_bytes = 0;
-                written_bytes = sendto( socket, SENT_MESSAGE, message_sent_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
-            } while ( written_bytes != message_sent_len);
+                written_bytes = sendto( socket, &pack, pack_len, MSG_CONFIRM, &(ret -> client_address), sock_len );
+            } while ( written_bytes != pack_len);
 
 
 

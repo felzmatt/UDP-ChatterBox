@@ -278,7 +278,7 @@ void receiving( void * args )
     
     thread_args_t * targs = ( thread_args_t *)args;
 
-    Packet * pack = (Packet*) calloc (1, sizeof(Packet));
+    Packet * pack; 
     int pack_len = sizeof(Packet);
     int read_bytes = 0;
     
@@ -290,7 +290,8 @@ void receiving( void * args )
         // sem_wait( &(targs -> semaphore));
        
             read_bytes = 0;
-            memset( pack, 0, pack_len);
+            // memset( pack, 0, pack_len);
+            pack = (Packet*) calloc (1, sizeof(Packet));
 
             read_bytes = recvfrom( targs -> socket, pack, pack_len, MSG_WAITALL, targs -> servaddr, targs -> servaddr_len);
         
