@@ -261,8 +261,8 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     // looking for recipient
     User * ret = find_user_by_username( users, recipient );
 
-    printf("Ho trovato il recipient %s\n", recipient);
-    printUser((list_node_t*)ret);
+    //printf("Ho trovato il recipient %s\n", recipient);
+    //printUser((list_node_t*)ret);
     
     int written_bytes = 0;
     
@@ -272,9 +272,7 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
 
     Packet pack = { 0 };
     pack.type = MESSAGE;
-    strncpy( pack.sender, sender, sender_len);
-    strncpy( pack.recipient, recipient, recipient_len);
-    strncpy( pack.data, data, data_len);
+    
 
     int pack_len = sizeof(Packet);
 
@@ -282,19 +280,25 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
     if ( ret == NULL )
     {
         // user is not registered
+        printf("recipient not registered\n");
+        strncpy( pack.sender, "CHATTERBOX\0",UNAME_MAX_LEN);
+        strncpy( pack.data, USER_NOT_FOUND, not_found_user_len);
 
         do {
             written_bytes = 0;
-            written_bytes = sendto(socket, USER_NOT_FOUND, not_found_user_len, MSG_CONFIRM, client_addr, sock_len);
+            written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, client_addr, sock_len);
         } while ( written_bytes != not_found_user_len);
     } else {
         
         if ( ret -> online == FALSE )
         {
             // user not connected
+            printf("Recipient not connected\n");
+            strncpy( pack.sender, "CHATTERBOX\0", UNAME_MAX_LEN);
+            strncpy( pack.data, USER_NOT_ONLINE, not_online_user_len);
             do {
                 written_bytes = 0;
-                written_bytes = sendto(socket, USER_NOT_ONLINE, not_online_user_len, MSG_CONFIRM, client_addr, sock_len);
+                written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, client_addr, sock_len);
             } while ( written_bytes != not_online_user_len);
         
         } else {
@@ -311,6 +315,9 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
             } while ( written_bytes != pack_len);
             */
             // at this point we have to unlock the waiting sender
+            strncpy( pack.sender, sender, sender_len);
+            strncpy( pack.recipient, recipient, recipient_len);
+            strncpy( pack.data, data, data_len);
 
             do {
                 written_bytes = 0;
