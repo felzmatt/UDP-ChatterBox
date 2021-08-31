@@ -299,7 +299,7 @@ void handle_message(int socket, list_t * users, Packet * packet, struct sockaddr
             do {
                 written_bytes = 0;
                 written_bytes = sendto(socket, &pack, pack_len, MSG_CONFIRM, client_addr, sock_len);
-            } while ( written_bytes != not_online_user_len);
+            } while ( written_bytes != pack_len);
         
         } else {
             // user is connected

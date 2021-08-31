@@ -235,18 +235,18 @@ int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t se
 int spm_command( MessageBox * inbox )
 {
     int i;
-    int last_read = inbox -> last_read;
+    //int last_read = inbox -> last_read;
     int size = inbox -> size;
     Packet * pack;
     if ( size == 0)
     {
         printf("No messages to be printed\n");
     } else {
-        for ( i = last_read; i < size; i++ )
+        for ( i = 0; i < size; i++ )
         {
             pack = &(inbox -> message_buffer[i]);
             printf("%s %s : %s %s\n",CYAN, pack -> sender, pack -> data, END_COLOR);
-            inbox -> last_read = size - 1;
+            //inbox -> last_read = size - 1;
 
         }
     }

@@ -95,7 +95,8 @@ int main(int argc, char ** argv ) {
 
 		// first of all alloc the message inbox
 
-		MessageBox * inbox = ( MessageBox *) calloc( 1, sizeof(MessageBox));
+		// MessageBox * inbox = ( MessageBox *) calloc( 1, sizeof(MessageBox));
+		MessageBox inbox = { 0 };
 
 		// make the targs point to already used structures
 
@@ -103,7 +104,7 @@ int main(int argc, char ** argv ) {
 		targs.servaddr = &servaddr;
 		targs.servaddr_len = len;
 		targs.socket = sockfd;
-		targs.inbox = inbox;
+		targs.inbox = &inbox;
 
 		// semaphore to securely access the message inbox
 		if ( sem_init( &targs.semaphore, 0, 1) == -1 )

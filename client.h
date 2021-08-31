@@ -31,7 +31,7 @@
 typedef struct message_box_s {
     
     int size;
-    int last_read;
+    
     Packet  message_buffer[MAX_PENDINGS];
 
 } MessageBox;
