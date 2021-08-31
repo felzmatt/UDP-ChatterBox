@@ -38,7 +38,6 @@ typedef enum type {
     NEWUSER,
     LOGIN,
     MESSAGE,
-    WHOSONLINE,
     DISCONNECT
 } Type;
 
