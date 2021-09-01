@@ -106,9 +106,7 @@ int main(int argc, char ** argv ) {
 		targs.socket = sockfd;
 		targs.inbox = &inbox;
 
-		// semaphore to securely access the message inbox
-		if ( sem_init( &targs.semaphore, 0, 1) == -1 )
-			handle_error("Error initializing semaphore");
+		
 
 		
 		// starting threads

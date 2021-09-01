@@ -116,7 +116,7 @@ int login_command( int socket, MyInfo * me,  struct sockaddr * servaddr, socklen
 
 void interactivity( void * args );
 
-int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len, sem_t * semaphore);
+int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len);
 int spm_command( MessageBox * inbox );
 int logout_command( int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len);
 void receiving( void * args );

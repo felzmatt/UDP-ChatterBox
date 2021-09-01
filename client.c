@@ -180,7 +180,7 @@ void interactivity( void * args)
 		
 		if ( strncmp(command, "PM", ret) == 0) {
 			// ret = newuser_command( sockfd, &servaddr, len);
-            ret = pm_command( targs -> socket, targs -> me, (struct sockaddr*)targs -> servaddr, targs -> servaddr_len, &(targs -> semaphore) );
+            ret = pm_command( targs -> socket, targs -> me, (struct sockaddr*)targs -> servaddr, targs -> servaddr_len );
             printf("return code : %d\n", ret);
 			// printf("Private Message\n");
 
@@ -202,7 +202,7 @@ void interactivity( void * args)
 	}
 }
 
-int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len, sem_t * semaphore) 
+int pm_command(int socket, MyInfo * me, struct sockaddr * servaddr, socklen_t servaddr_len) 
 {
 
     Packet pack = { 0 };
@@ -272,7 +272,7 @@ void receiving( void * args )
     while ( targs -> me -> connected )
     {
 
-        // sem_wait( &(targs -> semaphore));
+        
        
             read_bytes = 0;
             idx = targs -> inbox -> size;
@@ -287,12 +287,11 @@ void receiving( void * args )
         
        
 
-        // printf("PACKET\n    %d\n    %s\n    %s\n    %s\n\n\n", pack -> type, pack -> sender, pack -> recipient, pack -> data);
-        //sem_wait( &(targs -> semaphore));
+        
         
         targs -> inbox -> size += 1;
 
-        //sem_post( &( targs -> semaphore));
+        
 
        
         
