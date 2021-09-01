@@ -88,6 +88,8 @@ int loadUsers( list_t * users , const char * filepath , list_node_ops * ops)
         i++;
     }
 
+    close(fd);
+
     return i;
 }
 
